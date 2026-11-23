@@ -58,7 +58,17 @@ const linkLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHea
 // On your computer the server also shows the website, so you can test everything at
 // http://127.0.0.1:3000. On Cloud Run it is only the API (the website is on GitHub Pages).
 if (!isCloudRun) {
-    app.use(express.static(__dirname));
+    // Only public website files. Never serve serviceAccountKey.json, .env, server.js,
+    // scripts/ or node_modules/. (.json files are not served at all.)
+    const publicFile = /\.(html|css|js|svg|webp|jpe?g|png|gif|ico|pdf|txt)$/i;
+    const privatePath = /^\/(server\.js|node_modules|scripts)(\/|$)/i;
+    app.use((req, res, next) => {
+        const hasExtension = /\.[a-z0-9]+$/i.test(req.path);
+        if (privatePath.test(req.path) || (hasExtension && !publicFile.test(req.path))) {
+            return res.status(404).send('Not found');
+        }
+        next();
+    }, express.static(__dirname, { dotfiles: 'ignore' }));
 }
 
 app.post('/api/recommendations', formLimiter, async (req, res) => {
@@ -68,15 +78,23 @@ app.post('/api/recommendations', formLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Title & Author are required.' });
   }
 
-  if (String(bookInfo).length > 200 || String(comment || '').length > 2000 || String(tag || '').length > 50) {
+  // Only plain text is accepted (not objects or lists)
+  if (typeof bookInfo !== 'string' || (comment != null && typeof comment !== 'string') || (tag != null && typeof tag !== 'string')) {
+    return res.status(400).json({ error: 'Invalid input.' });
+  }
+
+  if (bookInfo.length > 200 || (comment || '').length > 2000 || (tag || '').length > 50) {
     return res.status(400).json({ error: 'Your note is too long.' });
   }
+
+  // The tag goes into the email subject: keep it to one short line, no line breaks
+  const cleanTag = (tag || 'none').replace(/[\r\n\t]+/g, ' ').trim() || 'none';
 
   const mailOptions = {
     from: '"Bluebound Ink Reader" <bluebound.ink@gmail.com>',
     to: 'bluebound.ink@gmail.com',
-    subject: `New Book Recommendation [${tag}]`,
-    text: `You received a new recommendation!\n\nTag: #${tag}\nBook: ${bookInfo}\nNotes: ${comment || 'N/A'}`
+    subject: `New Book Recommendation [${cleanTag}]`,
+    text: `You received a new recommendation!\n\nTag: #${cleanTag}\nBook: ${bookInfo}\nNotes: ${comment || 'N/A'}`
   };
 
   try {
@@ -250,6 +268,7 @@ app.get('/api/unsubscribe', linkLimiter, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+// On your computer listen only on this machine, not on the whole network
+app.listen(PORT, isCloudRun ? undefined : '127.0.0.1', () => {
     console.log(`Server running on http://127.0.0.1:${PORT}`);
 });
