@@ -48,16 +48,30 @@ function readReview(slug) {
     };
     const title = meta('og:title').replace(/\s*\|\s*Bluebound Ink$/, '').replace(/\s+[—-]\s+a review$/, '');
     if (!title) fail('That review page has no og:title tag.');
-    return { title, description: meta('og:description'), image: meta('og:image'), url: `${SITE_URL}/book-reviews/${slug}.html` };
+    const description = meta('og:description');
+    return { title, description, teaser: makeTeaser(html) || description, image: meta('og:image'), url: `${SITE_URL}/book-reviews/${slug}.html` };
+}
+
+// First paragraph of the review as plain text, cut at a sentence end near 280 characters
+function makeTeaser(html) {
+    const match = html.match(/<div class="review-body">\s*<p>\s*([\s\S]*?)<\/p>/);
+    if (!match) return '';
+    const text = decodeHtml(match[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+    const limit = 280;
+    if (text.length <= limit) return text;
+    const cut = text.slice(0, limit);
+    const lastEnd = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+    if (lastEnd > 80) return cut.slice(0, lastEnd + 1);
+    return cut.replace(/\s+\S*$/, '') + '…';
 }
 
 function buildEmail(review, unsubscribeLink) {
-    const text = `${review.title}\n\n${review.description}\n\nRead the review: ${review.url}\n\nUnsubscribe: ${unsubscribeLink}`;
+    const text = `${review.title}\n${review.description}\n\n${review.teaser}\n\nRead the review: ${review.url}\n\nUnsubscribe: ${unsubscribeLink}`;
     const html = renderEmail({
         siteUrl: SITE_URL,
-        preheader: review.description,
+        preheader: review.teaser,
         heading: review.title,
-        bodyHtml: `${review.image ? `<p style="margin: 0 0 18px 0;"><img src="${escapeHtml(review.image)}" alt="" width="160" style="display: block; border-radius: 6px;"></p>` : ''}<p style="margin: 0;">${escapeHtml(review.description)}</p>`,
+        bodyHtml: `${review.image ? `<p style="margin: 0 0 18px 0;"><img src="${escapeHtml(review.image)}" alt="" width="160" style="display: block; border-radius: 6px;"></p>` : ''}<p style="margin: 0 0 14px 0; font-size: 14px; color: #b9b3a6;">${escapeHtml(review.description)}</p><p style="margin: 0;">${escapeHtml(review.teaser)}</p>`,
         button: { label: 'READ THE REVIEW', url: review.url },
         unsubscribeLink
     });
