@@ -377,6 +377,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/design.css">
 </head>
 <body>
 
@@ -384,6 +385,24 @@
 
     <main>
         <p class="home-intro">A personal space for books, music, and creative explorations.</p>
+
+        <!-- HIDDEN until the real current book is added (was a placeholder: East of Eden).
+             To show it: change the cover, title, author, note and progress below, then delete the
+             comment start line above and the comment end line below.
+        <section class="now-reading" aria-label="Currently reading">
+            <img class="now-reading-cover" src="/images/covers/east-of-eden.webp" alt="East of Eden cover">
+            <div>
+                <div class="now-reading-label">Currently reading</div>
+                <h2 class="now-reading-title">East of Eden</h2>
+                <div class="now-reading-author">by John Steinbeck</div>
+                <p class="now-reading-note">"And now that you don't have to be perfect, you can be good."</p>
+                <div class="progress">
+                    <div class="progress-bar"><span style="width: 45%"></span></div>
+                    <div class="progress-text">45% · page 270 of 601</div>
+                </div>
+            </div>
+        </section>
+        -->
 
         <h2 class="posts-section-title gold-accent">Latest from the Reading Log</h2>
 
@@ -438,14 +457,14 @@
     <script src="/site.js"></script>
 
     <script>
-        // Latest from the Reading Log: copy the newest 3 books from books.html,
+        // Latest from the Reading Log: copy the newest 5 books from books.html,
         // so the home page updates by itself when a book is added there.
         (async function showLatestReviews() {
             const list = document.getElementById('latest-reviews');
             try {
                 const response = await fetch('/books.html');
                 const page = new DOMParser().parseFromString(await response.text(), 'text/html');
-                const latest = Array.from(page.querySelectorAll('.book-item')).slice(0, 3);
+                const latest = Array.from(page.querySelectorAll('.book-item')).slice(0, 5);
 
                 latest.forEach(book => {
                     const item = document.importNode(book, true);
@@ -460,7 +479,7 @@
                             tag.textContent = '#' + genre;
                             tags.appendChild(tag);
                         });
-                        item.querySelector('.book-info').appendChild(tags);
+                        item.appendChild(tags);
                     }
                     list.appendChild(item);
                 });
