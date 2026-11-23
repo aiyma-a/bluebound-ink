@@ -148,19 +148,6 @@
 <body>
 
     <header id="site-header">
-        
-        <!-- Now Playing Vinyl Widget -->
-        <div class="now-playing-card" id="now-playing">
-            <div class="vinyl-wrapper">
-                <div class="vinyl-disc" id="disc">
-                    <div class="album-art-center"><img id="album-art" src="" alt="Album Art"></div>
-                </div>
-            </div>
-            <div class="now-playing-info">
-                <div class="track-name" id="track-name">Loading...</div>
-                <div class="artist-name" id="artist-name"></div>
-            </div>
-        </div>
     </header>
 
     <main>
@@ -183,33 +170,6 @@
     <footer id="site-footer" class="site-footer"></footer>
 
     <script src="/site.js"></script>
-
-    <script>
-        async function fetchNowPlaying() {
-            try {
-                const response = await fetch(window.API_BASE + '/api/now-playing');
-                const data = await response.json();
-
-                if (data && data.isPlaying) {
-                    document.getElementById('track-name').textContent = data.title;
-                    document.getElementById('artist-name').textContent = data.artist;
-
-                    if (data.albumImageUrl) {
-                        document.getElementById('album-art').src = data.albumImageUrl;
-                    }
-                } else {
-                    document.getElementById('track-name').textContent = "Not playing";
-                    document.getElementById('artist-name').textContent = "Spotify paused";
-                }
-            } catch (error) {
-                document.getElementById('track-name').textContent = "Offline";
-                document.getElementById('artist-name').textContent = "Could not load track";
-            }
-        }
-
-        fetchNowPlaying();
-        setInterval(fetchNowPlaying, 10000);
-    </script>
     
 </body>
 </html>
