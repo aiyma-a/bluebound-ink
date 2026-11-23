@@ -99,13 +99,16 @@ async function main() {
 
     const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS } });
     const sendTo = async (address, token) => {
-        const unsubscribeLink = `${API_URL}/api/unsubscribe?token=${token}`;
+        const unsubscribeLink = `${SITE_URL}/subscribe/unsubscribe.html?token=${token}`;
         const { text, html } = buildEmail(review, unsubscribeLink);
         await transporter.sendMail({
             from: { name: 'Bluebound Ink', address: process.env.EMAIL_USER },
             to: address,
             subject: `New review: ${review.title}`,
-            headers: { 'List-Unsubscribe': `<${unsubscribeLink}>` },
+            headers: {
+                'List-Unsubscribe': `<${API_URL}/api/unsubscribe?token=${token}>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+            },
             text,
             html
         });
