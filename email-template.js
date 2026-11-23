@@ -6,7 +6,7 @@
 // Colours copied from the website (style.css). Two themes: 'dark' and 'light'.
 const BUTTON_TEXT = '#0f172a';
 const THEMES = {
-    dark:  { page: '#0f172a', card: '#162036', text: '#ece3d0', muted: '#a39d8f', line: '#2c3650', gold: '#d4af37' },
+    dark:  { page: '#1b2641', card: '#263558', text: '#f0e8d6', muted: '#b9b3a6', line: '#3e4d75', gold: '#d4af37' },
     light: { page: '#f7f4ec', card: '#fffdf8', text: '#2c2925', muted: '#7a7468', line: '#e6dfcf', gold: '#b8860b' }
 };
 const GOLD = '#d4af37'; // buttons use this in both themes
