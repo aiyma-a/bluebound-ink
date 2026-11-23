@@ -195,14 +195,14 @@ app.post('/api/subscribe', formLimiter, async (req, res) => {
             confirmSentAt: now
         });
 
-        const confirmLink = `${apiUrl(req)}/api/confirm?token=${token}`;
-        const removeLink = `${apiUrl(req)}/api/unsubscribe?token=${token}`;
+        const confirmLink = pageLink('confirm', token);
+        const removeLink = pageLink('unsubscribe', token);
 
         await transporter.sendMail({
             from: { name: 'Bluebound Ink', address: process.env.EMAIL_USER },
             to: cleanEmail,
             subject: 'Please confirm your subscription to Bluebound Ink',
-            headers: { 'List-Unsubscribe': `<${removeLink}>` },
+            headers: oneClickHeaders(req, token),
             text: `Please confirm your subscription to Bluebound Ink:\n\n${confirmLink}\n\nIf you did not subscribe, ignore this email. You will not hear from us again.\n\nNot you? Remove this address: ${removeLink}`,
             html: renderEmail({
                 siteUrl: SITE_URL,
@@ -226,54 +226,85 @@ app.post('/api/subscribe', formLimiter, async (req, res) => {
     }
 });
 
-app.get('/api/confirm', linkLimiter, async (req, res) => {
+// Links in emails open a page on the website (/subscribe/confirm.html or unsubscribe.html) that
+// shows a button. Only a click on that button calls the POST endpoints below, so email scanners
+// that open links in advance cannot confirm or remove anyone by accident.
+function pageLink(page, token) {
+    return `${SITE_URL}/subscribe/${page}.html?token=${token}`;
+}
+
+// Lets Gmail and others offer their own one-click "Unsubscribe" (RFC 8058)
+function oneClickHeaders(req, token) {
+    return {
+        'List-Unsubscribe': `<${apiUrl(req)}/api/unsubscribe?token=${token}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+    };
+}
+
+const validToken = token => typeof token === 'string' && /^[a-f0-9]{48}$/.test(token);
+
+// Old emails already sent contain direct links to these addresses. Opening them only sends the
+// visitor to the button page and changes nothing.
+app.get('/api/confirm', linkLimiter, (req, res) => {
+    if (validToken(req.query.token)) return res.redirect(pageLink('confirm', req.query.token));
+    return res.redirect(`${SITE_URL}/subscribe/confirmed.html?status=invalid`);
+});
+
+app.get('/api/unsubscribe', linkLimiter, (req, res) => {
+    if (validToken(req.query.token)) return res.redirect(pageLink('unsubscribe', req.query.token));
+    return res.redirect(`${SITE_URL}/subscribe/unsubscribed.html?status=invalid`);
+});
+
+app.post('/api/confirm', linkLimiter, async (req, res) => {
     try {
-        const doc = await findByToken(req.query.token);
+        const doc = await findByToken(req.body && req.body.token);
         if (!doc) {
-            return res.redirect(`${SITE_URL}/subscribe/confirmed.html?status=invalid`);
+            return res.status(400).json({ success: false, status: 'invalid' });
         }
 
         const data = doc.data();
         if (data.status === 'pending') {
             await doc.ref.update({ status: 'confirmed', confirmedAt: new Date().toISOString() });
 
-            const unsubscribeLink = `${apiUrl(req)}/api/unsubscribe?token=${data.token}`;
             await transporter.sendMail({
                 from: { name: 'Bluebound Ink', address: process.env.EMAIL_USER },
                 to: data.email,
                 subject: 'Welcome to Bluebound Ink',
-                headers: { 'List-Unsubscribe': `<${unsubscribeLink}>` },
-                text: `Thank you for subscribing to Bluebound Ink.\n\nTo unsubscribe: ${unsubscribeLink}`,
+                headers: oneClickHeaders(req, data.token),
+                text: `Thank you for subscribing to Bluebound Ink.\n\nTo unsubscribe: ${pageLink('unsubscribe', data.token)}`,
                 html: renderEmail({
                     siteUrl: SITE_URL,
                     preheader: 'You are on the list. New reviews will arrive here.',
                     heading: 'Welcome to Bluebound Ink',
                     bodyHtml: '<p style="margin: 0;">Thank you for subscribing. When a new book review goes up, you will get a short note with a link to read it. No spam, and never more than a few emails a month.</p>',
                     button: { label: 'VISIT THE READING LOG', url: `${SITE_URL}/books.html` },
-                    unsubscribeLink
+                    unsubscribeLink: pageLink('unsubscribe', data.token)
                 })
             });
             console.log(`Subscriber confirmed: ${data.email}`);
         }
 
-        return res.redirect(`${SITE_URL}/subscribe/confirmed.html`);
+        return res.json({ success: true });
     } catch (error) {
         console.error("Confirm Error:", error);
-        return res.redirect(`${SITE_URL}/subscribe/confirmed.html?status=error`);
+        return res.status(500).json({ success: false, status: 'error' });
     }
 });
 
-app.get('/api/unsubscribe', linkLimiter, async (req, res) => {
+// Also used by the mail provider's one-click Unsubscribe (token in the address, form body ignored)
+app.post('/api/unsubscribe', linkLimiter, async (req, res) => {
     try {
-        const doc = await findByToken(req.query.token);
-        if (doc) {
-            await doc.ref.delete();
-            console.log(`Subscriber removed: ${doc.data().email}`);
+        const doc = await findByToken(req.query.token || (req.body && req.body.token));
+        if (!doc) {
+            return res.status(400).json({ success: false, status: 'invalid' });
         }
-        return res.redirect(`${SITE_URL}/subscribe/unsubscribed.html`);
+        const removedEmail = doc.data().email;
+        await doc.ref.delete();
+        console.log(`Subscriber removed: ${removedEmail}`);
+        return res.json({ success: true });
     } catch (error) {
         console.error("Unsubscribe Error:", error);
-        return res.redirect(`${SITE_URL}/subscribe/unsubscribed.html?status=error`);
+        return res.status(500).json({ success: false, status: 'error' });
     }
 });
 

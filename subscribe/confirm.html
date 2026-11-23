@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Confirm subscription | Bluebound Ink</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        .status-message {
+            margin-bottom: 60px;
+        }
+
+        .status-message h2 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            font-style: italic;
+            margin: 0 0 20px 0;
+        }
+
+        .status-message p {
+            opacity: 0.9;
+        }
+
+
+        .action-button {
+            display: inline-block;
+            background: #d4af37;
+            color: #0f172a;
+            border: 0;
+            border-radius: 6px;
+            padding: 14px 30px;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+        }
+        .action-button[disabled] { opacity: 0.6; cursor: default; }
+        .action-button.quiet { background: transparent; color: inherit; border: 1px solid currentColor; }
+
+        .status-message a {
+            color: var(--gold-date);
+        }
+    </style>
+    <link rel="stylesheet" href="/design.css">
+</head>
+<body>
+
+    <header id="site-header"></header>
+
+    <main>
+        <div class="status-message" id="status-message">
+            <h2>Confirm your subscription</h2>
+            <p>One click and you are on the list for new book reviews from Bluebound Ink.</p>
+            <p><button class="action-button" id="action-button" type="button">CONFIRM SUBSCRIPTION</button></p>
+        </div>
+    </main>
+
+    <footer id="site-footer" class="site-footer"></footer>
+
+    <script src="/site.js"></script>
+    <script>
+        // This page only acts when the visitor clicks the button, so email scanners that open
+        // links in advance cannot confirm or remove anyone by accident.
+        const token = new URLSearchParams(window.location.search).get('token') || '';
+        const box = document.getElementById('status-message');
+        const button = document.getElementById('action-button');
+
+        function show(heading, text, extra) {
+            box.innerHTML = '<h2></h2><p></p>' + (extra || '');
+            box.querySelector('h2').textContent = heading;
+            box.querySelector('p').textContent = text;
+        }
+
+        if (!/^[a-f0-9]{48}$/.test(token)) {
+            show('This link does not work', 'It may be old, or you already used it. Please subscribe again at the bottom of this page.');
+        } else {
+            button.addEventListener('click', async () => {
+                button.disabled = true;
+                try {
+                    const response = await fetch(window.API_BASE + '/api/confirm', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        show("You're subscribed", 'Thank you for confirming. A welcome email is on its way.', '<p><a href="/books.html">Browse the reading log →</a></p>');
+                    } else if (data.status === 'invalid') {
+                        show('This link does not work', 'It may be old, or you already used it. Please subscribe again at the bottom of this page.');
+                    } else {
+                        throw new Error('failed');
+                    }
+                } catch (error) {
+                    button.disabled = false;
+                    show('Something went wrong', 'Please try again in a few minutes.', '<p><button class="action-button" id="retry" type="button" onclick="location.reload()">Try again</button></p>');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
