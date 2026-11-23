@@ -29,12 +29,12 @@ function renderEmail({ theme = 'dark', siteUrl, preheader, heading, bodyHtml, bu
     const c = THEMES[theme] || THEMES.dark;
     const siteLink = `<a href="${escapeHtml(siteUrl)}" style="color: ${c.muted}; text-decoration: underline;">bluebound-ink.com</a>`;
     const buttonHtml = button ? `
-                <tr><td style="padding: 8px 40px 8px 40px;">
+                <tr><td class="bb-pad" style="padding: 8px 40px 8px 40px;">
                     <a href="${escapeHtml(button.url)}" style="display: inline-block; background: ${GOLD}; color: ${BUTTON_TEXT}; padding: 14px 30px; border-radius: 6px; text-decoration: none; font-family: ${SANS}; font-size: 14px; font-weight: bold; letter-spacing: 0.06em;">${escapeHtml(button.label)}</a>
                 </td></tr>` : '';
 
     const noteRow = noteHtml ? `
-                <tr><td style="padding: 18px 40px 0 40px; font-family: ${SERIF}; font-size: 14px; line-height: 1.6; color: ${c.muted};">${noteHtml}</td></tr>` : '';
+                <tr><td class="bb-pad" style="padding: 18px 40px 0 40px; font-family: ${SERIF}; font-size: 14px; line-height: 1.6; color: ${c.muted};">${noteHtml}</td></tr>` : '';
 
     const unsubscribeHtml = unsubscribeLink ? `
                     <p style="margin: 0 0 14px 0;">You are receiving this because you subscribed on ${siteLink}.</p>
@@ -43,20 +43,28 @@ function renderEmail({ theme = 'dark', siteUrl, preheader, heading, bodyHtml, bu
 
     return `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(heading)}</title></head>
-<body style="margin: 0; padding: 0; background: ${c.page};">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="${theme === 'light' ? 'light' : 'dark'}"><title>${escapeHtml(heading)}</title>
+<style>
+    html, body { margin: 0; padding: 0; background: ${c.page}; }
+    @media only screen and (max-width: 640px) {
+        .bb-outer { padding: 0 !important; }
+        .bb-card { border-radius: 0 !important; }
+        .bb-pad { padding-left: 24px !important; padding-right: 24px !important; }
+    }
+</style></head>
+<body bgcolor="${c.page}" style="margin: 0; padding: 0; background: ${c.page};">
     <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: ${c.page};">${escapeHtml(preheader || heading)}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background: ${c.page};">
-        <tr><td align="center" style="padding: 32px 12px;">
-            <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 560px; background: ${c.card}; border-radius: 10px; overflow: hidden;">
-                <tr><td style="padding: 28px 40px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.page}" style="background: ${c.page}; min-width: 100%;">
+        <tr><td class="bb-outer" align="center" bgcolor="${c.page}" style="padding: 24px 16px;">
+            <table class="bb-card" role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.card}" style="width: 100%; max-width: 640px; background: ${c.card}; border-radius: 10px; overflow: hidden;">
+                <tr><td style="padding: 28px 40px;" class="bb-pad">
                     <a href="${escapeHtml(siteUrl)}" style="text-decoration: none; font-family: ${SERIF}; font-size: 28px; font-style: italic; color: ${c.text};">Bluebound <span style="color: ${c.gold};">Ink</span></a>
                 </td></tr>
                 <tr><td style="height: 3px; background: ${c.gold}; font-size: 0; line-height: 0;">&nbsp;</td></tr>
-                <tr><td style="padding: 36px 40px 10px 40px; font-family: ${SERIF}; font-size: 26px; font-style: italic; line-height: 1.3; color: ${c.text};">${escapeHtml(heading)}</td></tr>
-                <tr><td style="padding: 0 40px 22px 40px; font-family: ${SERIF}; font-size: 17px; line-height: 1.7; color: ${c.text};">${bodyHtml}</td></tr>${buttonHtml}${noteRow}
-                <tr><td style="padding: 36px 40px 0 40px;"><div style="border-top: 1px solid ${c.line}; font-size: 0; line-height: 0;">&nbsp;</div></td></tr>
-                <tr><td style="padding: 22px 40px 34px 40px; font-family: ${SERIF}; font-size: 13px; line-height: 1.6; color: ${c.muted};">${unsubscribeHtml}
+                <tr><td class="bb-pad" style="padding: 36px 40px 10px 40px; font-family: ${SERIF}; font-size: 26px; font-style: italic; line-height: 1.3; color: ${c.text};">${escapeHtml(heading)}</td></tr>
+                <tr><td class="bb-pad" style="padding: 0 40px 22px 40px; font-family: ${SERIF}; font-size: 17px; line-height: 1.7; color: ${c.text};">${bodyHtml}</td></tr>${buttonHtml}${noteRow}
+                <tr><td class="bb-pad" style="padding: 36px 40px 0 40px;"><div style="border-top: 1px solid ${c.line}; font-size: 0; line-height: 0;">&nbsp;</div></td></tr>
+                <tr><td class="bb-pad" style="padding: 22px 40px 34px 40px; font-family: ${SERIF}; font-size: 13px; line-height: 1.6; color: ${c.muted};">${unsubscribeHtml}
                 </td></tr>
             </table>
         </td></tr>
