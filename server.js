@@ -4,6 +4,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -42,6 +43,14 @@ const app = express();
 
 // Cloud Run sits behind a Google proxy; trust it so we see the real visitor IP and https
 app.set('trust proxy', 1);
+// Safe browser headers (and no "X-Powered-By: Express" label).
+// No Content-Security-Policy here: the API only returns JSON and redirects, and locally
+// the server also shows the website, whose pages use inline scripts and styles.
+// Cross-origin reads stay allowed because the website calls this API from another address.
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: '10kb' }));
 
