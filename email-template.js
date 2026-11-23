@@ -3,12 +3,13 @@
 //
 // Email programs ignore most CSS, so this uses a table and inline styles only.
 
+// Colours copied from the website (style.css, dark theme)
 const GOLD = '#d4af37';
-const NAVY = '#0f172a';
-const PAPER = '#fffdf8';
-const BACKGROUND = '#f2ede2';
-const TEXT = '#2c2925';
-const MUTED = '#7a7468';
+const NAVY = '#0f172a';      // page background
+const CARD = '#162036';      // card, a touch lighter than the page
+const CREAM = '#ece3d0';     // main text
+const MUTED = '#a39d8f';     // small grey text
+const LINE = '#2c3650';      // thin dividers
 const SERIF = "Georgia, 'Times New Roman', serif";
 const SANS = "Helvetica, Arial, sans-serif";
 
@@ -41,18 +42,18 @@ function renderEmail({ siteUrl, preheader, heading, bodyHtml, button, noteHtml, 
     return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(heading)}</title></head>
-<body style="margin: 0; padding: 0; background: ${BACKGROUND};">
-    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: ${BACKGROUND};">${escapeHtml(preheader || heading)}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background: ${BACKGROUND};">
+<body style="margin: 0; padding: 0; background: ${NAVY};">
+    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: ${NAVY};">${escapeHtml(preheader || heading)}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background: ${NAVY};">
         <tr><td align="center" style="padding: 32px 12px;">
-            <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 560px; background: ${PAPER}; border-radius: 10px; overflow: hidden;">
-                <tr><td style="background: ${NAVY}; padding: 28px 40px;">
-                    <a href="${escapeHtml(siteUrl)}" style="text-decoration: none; font-family: ${SERIF}; font-size: 28px; font-style: italic; color: #ece3d0;">Bluebound <span style="color: ${GOLD};">Ink</span></a>
+            <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 560px; background: ${CARD}; border-radius: 10px; overflow: hidden;">
+                <tr><td style="padding: 28px 40px;">
+                    <a href="${escapeHtml(siteUrl)}" style="text-decoration: none; font-family: ${SERIF}; font-size: 28px; font-style: italic; color: ${CREAM};">Bluebound <span style="color: ${GOLD};">Ink</span></a>
                 </td></tr>
                 <tr><td style="height: 3px; background: ${GOLD}; font-size: 0; line-height: 0;">&nbsp;</td></tr>
-                <tr><td style="padding: 36px 40px 10px 40px; font-family: ${SERIF}; font-size: 26px; font-style: italic; line-height: 1.3; color: ${TEXT};">${escapeHtml(heading)}</td></tr>
-                <tr><td style="padding: 0 40px 22px 40px; font-family: ${SERIF}; font-size: 17px; line-height: 1.7; color: ${TEXT};">${bodyHtml}</td></tr>${buttonHtml}${noteRow}
-                <tr><td style="padding: 36px 40px 0 40px;"><div style="border-top: 1px solid #e6dfcf; font-size: 0; line-height: 0;">&nbsp;</div></td></tr>
+                <tr><td style="padding: 36px 40px 10px 40px; font-family: ${SERIF}; font-size: 26px; font-style: italic; line-height: 1.3; color: ${CREAM};">${escapeHtml(heading)}</td></tr>
+                <tr><td style="padding: 0 40px 22px 40px; font-family: ${SERIF}; font-size: 17px; line-height: 1.7; color: ${CREAM};">${bodyHtml}</td></tr>${buttonHtml}${noteRow}
+                <tr><td style="padding: 36px 40px 0 40px;"><div style="border-top: 1px solid ${LINE}; font-size: 0; line-height: 0;">&nbsp;</div></td></tr>
                 <tr><td style="padding: 22px 40px 34px 40px; font-family: ${SERIF}; font-size: 13px; line-height: 1.6; color: ${MUTED};">${unsubscribeHtml}
                 </td></tr>
             </table>
