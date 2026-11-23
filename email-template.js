@@ -6,7 +6,7 @@
 // Colours copied from the website (style.css). Two themes: 'dark' and 'light'.
 const BUTTON_TEXT = '#0f172a';
 const THEMES = {
-    dark:  { page: '#1b2641', card: '#263558', text: '#f0e8d6', muted: '#b9b3a6', line: '#3e4d75', gold: '#d4af37' },
+    dark:  { page: '#223152', card: '#223152', text: '#f0e8d6', muted: '#b9b3a6', line: '#3e4d75', gold: '#d4af37' },
     light: { page: '#f7f4ec', card: '#fffdf8', text: '#2c2925', muted: '#7a7468', line: '#e6dfcf', gold: '#b8860b' }
 };
 const GOLD = '#d4af37'; // buttons use this in both themes
@@ -47,24 +47,27 @@ function renderEmail({ theme = 'dark', siteUrl, preheader, heading, bodyHtml, bu
 <style>
     html, body { margin: 0; padding: 0; background: ${c.page}; }
     @media only screen and (max-width: 640px) {
-        .bb-outer { padding: 0 !important; }
-        .bb-card { border-radius: 0 !important; }
         .bb-pad { padding-left: 24px !important; padding-right: 24px !important; }
     }
 </style></head>
 <body bgcolor="${c.page}" style="margin: 0; padding: 0; background: ${c.page};">
     <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: ${c.page};">${escapeHtml(preheader || heading)}</div>
+    <!-- One flat background across the whole message; the content sits in a centred 640 px column -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.page}" style="background: ${c.page}; min-width: 100%;">
-        <tr><td class="bb-outer" align="center" bgcolor="${c.page}" style="padding: 24px 16px;">
-            <table class="bb-card" role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.card}" style="width: 100%; max-width: 640px; background: ${c.card}; border-radius: 10px; overflow: hidden;">
-                <tr><td style="padding: 28px 40px;" class="bb-pad">
+        <tr><td align="center" bgcolor="${c.page}" style="padding: 0;">
+            <table class="bb-col" role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 640px;">
+                <tr><td class="bb-pad" style="padding: 30px 40px;">
                     <a href="${escapeHtml(siteUrl)}" style="text-decoration: none; font-family: ${SERIF}; font-size: 28px; font-style: italic; color: ${c.text};">Bluebound <span style="color: ${c.gold};">Ink</span></a>
                 </td></tr>
-                <tr><td style="height: 3px; background: ${c.gold}; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+            </table>
+        </td></tr>
+        <tr><td bgcolor="${c.gold}" style="height: 3px; background: ${c.gold}; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+        <tr><td align="center" bgcolor="${c.page}" style="padding: 0 0 24px 0;">
+            <table class="bb-col" role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 640px;">
                 <tr><td class="bb-pad" style="padding: 36px 40px 10px 40px; font-family: ${SERIF}; font-size: 26px; font-style: italic; line-height: 1.3; color: ${c.text};">${escapeHtml(heading)}</td></tr>
                 <tr><td class="bb-pad" style="padding: 0 40px 22px 40px; font-family: ${SERIF}; font-size: 17px; line-height: 1.7; color: ${c.text};">${bodyHtml}</td></tr>${buttonHtml}${noteRow}
                 <tr><td class="bb-pad" style="padding: 36px 40px 0 40px;"><div style="border-top: 1px solid ${c.line}; font-size: 0; line-height: 0;">&nbsp;</div></td></tr>
-                <tr><td class="bb-pad" style="padding: 22px 40px 34px 40px; font-family: ${SERIF}; font-size: 13px; line-height: 1.6; color: ${c.muted};">${unsubscribeHtml}
+                <tr><td class="bb-pad" style="padding: 22px 40px 10px 40px; font-family: ${SERIF}; font-size: 13px; line-height: 1.6; color: ${c.muted};">${unsubscribeHtml}
                 </td></tr>
             </table>
         </td></tr>
