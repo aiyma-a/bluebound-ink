@@ -196,19 +196,21 @@ app.post('/api/subscribe', formLimiter, async (req, res) => {
         });
 
         const confirmLink = `${apiUrl(req)}/api/confirm?token=${token}`;
+        const removeLink = `${apiUrl(req)}/api/unsubscribe?token=${token}`;
 
         await transporter.sendMail({
             from: { name: 'Bluebound Ink', address: process.env.EMAIL_USER },
             to: cleanEmail,
             subject: 'Please confirm your subscription to Bluebound Ink',
-            text: `Please confirm your subscription to Bluebound Ink:\n\n${confirmLink}\n\nIf you did not subscribe, ignore this email. You will not hear from us again.`,
+            headers: { 'List-Unsubscribe': `<${removeLink}>` },
+            text: `Please confirm your subscription to Bluebound Ink:\n\n${confirmLink}\n\nIf you did not subscribe, ignore this email. You will not hear from us again.\n\nNot you? Remove this address: ${removeLink}`,
             html: renderEmail({
                 siteUrl: SITE_URL,
                 preheader: 'Tap the button to confirm your subscription.',
                 heading: 'One more step',
                 bodyHtml: '<p style="margin: 0;">Please confirm that you want occasional notes from Bluebound Ink: new book reviews and the odd bit of news.</p>',
                 button: { label: 'CONFIRM SUBSCRIPTION', url: confirmLink },
-                noteHtml: 'If you did not subscribe, just ignore this email. You will not hear from us again.'
+                noteHtml: `If you did not subscribe, just ignore this email. You will not hear from us again.<br><br>Not you? <a href="${removeLink}" style="color: #b9b3a6; text-decoration: underline;">Remove my address</a>`
             })
         });
         console.log(`Confirmation email sent: ${cleanEmail}`);
