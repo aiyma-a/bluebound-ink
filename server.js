@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const { renderEmail } = require('./email-template');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -150,15 +151,6 @@ async function findByToken(token) {
     return snapshot.empty ? null : snapshot.docs[0];
 }
 
-function emailLayout(title, bodyHtml) {
-    return `
-        <div style="font-family: Georgia, serif; color: #2c2925; padding: 20px; max-width: 520px;">
-            <h2 style="font-style: italic; font-weight: 500;">${title}</h2>
-            ${bodyHtml}
-            <p style="color: #888; font-size: 0.9rem; margin-top: 30px;">Bluebound Ink</p>
-        </div>`;
-}
-
 app.post('/api/subscribe', formLimiter, async (req, res) => {
     try {
         const { email } = req.body;
@@ -210,11 +202,14 @@ app.post('/api/subscribe', formLimiter, async (req, res) => {
             to: cleanEmail,
             subject: 'Please confirm your subscription to Bluebound Ink',
             text: `Please confirm your subscription to Bluebound Ink:\n\n${confirmLink}\n\nIf you did not subscribe, ignore this email. You will not hear from us again.`,
-            html: emailLayout('One more step', `
-                <p>Please confirm that you want occasional notes from Bluebound Ink.</p>
-                <p><a href="${confirmLink}" style="display: inline-block; background: #d4af37; color: #0f172a; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-family: sans-serif; font-size: 0.9rem; letter-spacing: 0.05em;">Confirm subscription</a></p>
-                <p style="color: #666; font-size: 0.9rem;">If you did not subscribe, ignore this email. You will not hear from us again.</p>
-            `)
+            html: renderEmail({
+                siteUrl: SITE_URL,
+                preheader: 'Tap the button to confirm your subscription.',
+                heading: 'One more step',
+                bodyHtml: '<p style="margin: 0;">Please confirm that you want occasional notes from Bluebound Ink: new book reviews and the odd bit of news.</p>',
+                button: { label: 'CONFIRM SUBSCRIPTION', url: confirmLink },
+                noteHtml: 'If you did not subscribe, just ignore this email. You will not hear from us again.'
+            })
         });
         console.log(`Confirmation email sent: ${cleanEmail}`);
 
@@ -247,10 +242,14 @@ app.get('/api/confirm', linkLimiter, async (req, res) => {
                 subject: 'Welcome to Bluebound Ink',
                 headers: { 'List-Unsubscribe': `<${unsubscribeLink}>` },
                 text: `Thank you for subscribing to Bluebound Ink.\n\nTo unsubscribe: ${unsubscribeLink}`,
-                html: emailLayout('Welcome to Bluebound Ink', `
-                    <p>Thank you for subscribing. You are now on the list to receive occasional notes.</p>
-                    <p style="color: #888; font-size: 0.8rem; margin-top: 30px;">Don't want these emails? <a href="${unsubscribeLink}" style="color: #888;">Unsubscribe</a></p>
-                `)
+                html: renderEmail({
+                    siteUrl: SITE_URL,
+                    preheader: 'You are on the list. New reviews will arrive here.',
+                    heading: 'Welcome to Bluebound Ink',
+                    bodyHtml: '<p style="margin: 0;">Thank you for subscribing. When a new book review goes up, you will get a short note with a link to read it. No spam, and never more than a few emails a month.</p>',
+                    button: { label: 'VISIT THE READING LOG', url: `${SITE_URL}/books.html` },
+                    unsubscribeLink
+                })
             });
             console.log(`Subscriber confirmed: ${data.email}`);
         }
