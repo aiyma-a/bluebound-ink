@@ -14,6 +14,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const { renderEmail } = require('../email-template');
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
@@ -52,15 +53,14 @@ function readReview(slug) {
 
 function buildEmail(review, unsubscribeLink) {
     const text = `${review.title}\n\n${review.description}\n\nRead the review: ${review.url}\n\nUnsubscribe: ${unsubscribeLink}`;
-    const html = `
-        <div style="font-family: Georgia, serif; color: #2c2925; padding: 20px; max-width: 520px;">
-            <p style="color: #888; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">New on Bluebound Ink</p>
-            <h2 style="font-style: italic; font-weight: 500;">${escapeHtml(review.title)}</h2>
-            ${review.image ? `<p><img src="${escapeHtml(review.image)}" alt="" width="160" style="border-radius: 4px;"></p>` : ''}
-            <p>${escapeHtml(review.description)}</p>
-            <p><a href="${escapeHtml(review.url)}" style="display: inline-block; background: #d4af37; color: #0f172a; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-family: sans-serif; font-size: 0.9rem; letter-spacing: 0.05em;">Read the review</a></p>
-            <p style="color: #888; font-size: 0.8rem; margin-top: 30px;">Don't want these emails? <a href="${escapeHtml(unsubscribeLink)}" style="color: #888;">Unsubscribe</a></p>
-        </div>`;
+    const html = renderEmail({
+        siteUrl: SITE_URL,
+        preheader: review.description,
+        heading: review.title,
+        bodyHtml: `${review.image ? `<p style="margin: 0 0 18px 0;"><img src="${escapeHtml(review.image)}" alt="" width="160" style="display: block; border-radius: 6px;"></p>` : ''}<p style="margin: 0;">${escapeHtml(review.description)}</p>`,
+        button: { label: 'READ THE REVIEW', url: review.url },
+        unsubscribeLink
+    });
     return { text, html };
 }
 
