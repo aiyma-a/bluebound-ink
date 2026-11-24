@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /subscribe/
+
+Sitemap: https://bluebound-ink.com/sitemap.xml
