@@ -15,6 +15,7 @@ window.API_BASE = window.location.hostname.endsWith('bluebound-ink.com')
 (function () {
     const NAV_LINKS = [
         { href: '/books.html', label: 'Books', section: 'books' },
+        { href: '/watch.html', label: 'Watch', section: 'watch' },
         { href: '/music.html', label: 'Music', section: 'music' },
         { href: '/about.html', label: 'About', section: 'about' },
     ];
@@ -24,6 +25,7 @@ window.API_BASE = window.location.hostname.endsWith('bluebound-ink.com')
     let currentSection = '';
     if (path.startsWith('/book-reviews/') || path.endsWith('/books.html')) currentSection = 'books';
     else if (path.endsWith('/music.html')) currentSection = 'music';
+    else if (path.endsWith('/watch.html')) currentSection = 'watch';
     else if (path.endsWith('/about.html')) currentSection = 'about';
 
     // ---------- Header ----------
