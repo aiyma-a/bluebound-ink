@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch | Bluebound Ink</title>
+    <!-- Link preview (Telegram, WhatsApp, Instagram, X, ...) -->
+    <meta name="description" content="Shows, movies and book adaptations, reviewed in my own words.">
+    <meta property="og:site_name" content="Bluebound Ink">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Watch | Bluebound Ink">
+    <meta property="og:description" content="Shows, movies and book adaptations, reviewed in my own words.">
+    <meta property="og:url" content="https://bluebound-ink.com/watch.html">
+    <meta property="og:image" content="https://bluebound-ink.com/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Importing Cormorant Garamond from Google Fonts -->
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/style.css">
+    
+    <style>
+        .page-section-title {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 20px;
+        }
+        .watch-intro { max-width: 640px; opacity: 0.85; margin: 0 0 44px 0; }
+        .watch-entry { display: grid; grid-template-columns: 150px 1fr; gap: 32px; padding: 0 0 48px 0; margin: 0 0 48px 0;
+                       border-bottom: 1px solid var(--border-color); }
+        .watch-entry:last-child { border-bottom: 0; }
+        .watch-poster { width: 150px; height: 225px; object-fit: cover; border-radius: 6px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); display: block; }
+        .watch-poster-ph { width: 150px; aspect-ratio: 2 / 3; border-radius: 6px; background: linear-gradient(160deg, #223152, #3b4d7a);
+                           display: flex; align-items: center; justify-content: center; color: var(--gold-date); font-size: 2.4rem; }
+        .watch-meta { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 0.72rem; letter-spacing: 0.12em;
+                      text-transform: uppercase; color: var(--gold-date); margin: 0 0 8px 0; }
+        .watch-meta a { color: inherit; }
+        .watch-title { font-size: 2rem; font-weight: 500; line-height: 1.2; margin: 0 0 14px 0; font-style: italic; }
+        .watch-text p { margin: 0 0 1em 0; line-height: 1.75; }
+        .watch-text a { color: var(--gold-date); }
+        .watch-date { opacity: 0.6; font-size: 0.9rem; font-style: italic; }
+        @media (max-width: 640px) {
+                .watch-entry { grid-template-columns: 96px 1fr; gap: 16px; }
+            .watch-poster, .watch-poster-ph { width: 96px; height: 144px; }
+            .watch-title { font-size: 1.5rem; }
+            .watch-text { grid-column: 1 / -1; }
+        }
+    </style>
+    <link rel="stylesheet" href="/design.css">
+</head>
+<body>
+
+    <header id="site-header"></header>
+
+    <main>
+        <h2 class="page-section-title gold-accent">Watch</h2>
+        <p class="watch-intro">The occasional show or movie, and what I thought of the adaptations of books I've read.</p>
+        <article class="watch-entry">
+            <img class="watch-poster" src="/images/covers/persuasion-2007.webp" alt="Persuasion (2007) cover" loading="lazy" decoding="async">
+            <div>
+                <p class="watch-meta">TV film &middot; Based on <a href="/book-reviews/persuasion.html">Persuasion</a> by Jane Austen</p>
+                <h3 class="watch-title">Persuasion (2007)</h3>
+                <div class="watch-text">
+                    <p>My favorite Jane Austen adaptation ever.</p>
+                    <p>If you want to start with the book, my review of <a href="/book-reviews/persuasion.html">Persuasion</a> is here.</p>
+                </div>
+                <p class="watch-date">Added Nov 2026</p>
+            </div>
+        </article>
+
+        <article class="watch-entry">
+            <img class="watch-poster" src="/images/covers/seeking-persephone.webp" alt="Seeking Persephone" loading="lazy" decoding="async">
+            <div>
+                <p class="watch-meta">Series &middot; Based on the novel by Sarah M. Eden</p>
+                <h3 class="watch-title">Seeking Persephone</h3>
+                <div class="watch-text">
+                    <p>Another adaptation that I fell in love with.</p>
+                </div>
+                <p class="watch-date">Added Nov 2026</p>
+            </div>
+        </article>
+    </main>
+
+    <footer id="site-footer" class="site-footer"></footer>
+
+    <script src="/site.js"></script>
+</body>
+</html>
