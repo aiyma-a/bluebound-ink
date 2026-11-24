@@ -31,7 +31,7 @@
         .watch-entry { display: grid; grid-template-columns: 150px 1fr; gap: 32px; padding: 0 0 48px 0; margin: 0 0 48px 0;
                        border-bottom: 1px solid var(--border-color); }
         .watch-entry:last-child { border-bottom: 0; }
-        .watch-poster { width: 150px; border-radius: 6px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); display: block; }
+        .watch-poster { width: 150px; height: 225px; object-fit: cover; border-radius: 6px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); display: block; }
         .watch-poster-ph { width: 150px; aspect-ratio: 2 / 3; border-radius: 6px; background: linear-gradient(160deg, #223152, #3b4d7a);
                            display: flex; align-items: center; justify-content: center; color: var(--gold-date); font-size: 2.4rem; }
         .watch-meta { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 0.72rem; letter-spacing: 0.12em;
@@ -41,13 +41,9 @@
         .watch-text p { margin: 0 0 1em 0; line-height: 1.75; }
         .watch-text a { color: var(--gold-date); }
         .watch-date { opacity: 0.6; font-size: 0.9rem; font-style: italic; }
-        .watch-entry.wide { grid-template-columns: 1fr; gap: 20px; }
-        .watch-banner { width: 100%; max-width: 760px; height: auto; border-radius: 8px;
-                        box-shadow: 0 10px 28px rgba(0,0,0,0.4); display: block; }
         @media (max-width: 640px) {
-            .watch-entry.wide { grid-template-columns: 1fr; }
-            .watch-entry { grid-template-columns: 96px 1fr; gap: 16px; }
-            .watch-poster, .watch-poster-ph { width: 96px; }
+                .watch-entry { grid-template-columns: 96px 1fr; gap: 16px; }
+            .watch-poster, .watch-poster-ph { width: 96px; height: 144px; }
             .watch-title { font-size: 1.5rem; }
             .watch-text { grid-column: 1 / -1; }
         }
@@ -74,8 +70,8 @@
             </div>
         </article>
 
-        <article class="watch-entry wide">
-            <img class="watch-banner" src="/images/covers/seeking-persephone.webp" alt="Seeking Persephone" loading="lazy" decoding="async">
+        <article class="watch-entry">
+            <img class="watch-poster" src="/images/covers/seeking-persephone.webp" alt="Seeking Persephone" loading="lazy" decoding="async">
             <div>
                 <p class="watch-meta">Series &middot; Based on the novel by Sarah M. Eden</p>
                 <h3 class="watch-title">Seeking Persephone</h3>
