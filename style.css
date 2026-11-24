@@ -15,7 +15,7 @@ body.light-mode {
     --text-color: #2c2925;
     --text-opacity: 0.9;
     --border-color: rgba(44, 41, 37, 0.15);
-    --gold-date: #b8860b;
+    --gold-date: #8a6508;
 }
 
 body {
@@ -107,6 +107,22 @@ header nav a:hover {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+/* Light mode: the pale golds that look good on navy are too faint on cream, so use deeper golds */
+body.light-mode .gold-accent {
+    background: linear-gradient(135deg, #7a5a00 0%, #8a6508 50%, #6e5006 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-mode header nav a.active {
+    color: #8a6508;
+}
+
+body.light-mode .theme-toggle:hover {
+    color: #8a6508;
 }
 
 /* Now Playing Card Styling */
